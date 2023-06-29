@@ -1,7 +1,7 @@
 obj-m := coyote_drv.o
 coyote_drv-objs:= fpga_drv.o fpga_isr.o fpga_fops.o fpga_sysfs.o fpga_dev.o fpga_mmu.o pci/pci_dev.o eci/eci_dev.o
 
-KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+KERNELDIR ?= $(NIXKERNEL)/lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
 ROOT := $(dir $(M))
