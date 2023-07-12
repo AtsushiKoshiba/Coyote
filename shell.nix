@@ -25,7 +25,7 @@
     ];
 
     shellHook = ''
-      export NIXKERNEL=$(nix-build -E '(import <nixpkgs> {}).linuxPackages_latest.kernel.dev' --no-out-link);
+      export NIXKERNEL=$(find /nix -type d -regex ".*linux-$(uname -r)-dev")
       export PYTHONPATH=${python-with-my-packages}/${python-with-my-packages.sitePackages}
     '';
 }
