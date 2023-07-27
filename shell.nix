@@ -10,7 +10,6 @@
   pkgs.mkShell {
     # nativeBuildInputs is usually what you want -- tools you need to run
     nativeBuildInputs = with pkgs.buildPackages; [ 
-      linuxPackages_latest.kernel.dev
       cmake
       boost
       coreutils
@@ -19,6 +18,8 @@
       binutils
       usbutils
       pciutils
+      pahole
+      gcc11
 
       python3
       python-with-my-packages
