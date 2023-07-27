@@ -13,7 +13,7 @@ endtask
 
 module tb_user;
 
-    c_struct_t params = { 16 };
+    c_struct_t params = { 8 };
 
     logic aclk = 1'b1;
     logic aresetn = 1'b0;
@@ -43,12 +43,12 @@ module tb_user;
     c_meta #(.ST(logic[PID_BITS-1:0])) bpss_rd_done_drv = new(bpss_rd_done);
     c_meta #(.ST(logic[PID_BITS-1:0])) bpss_wr_done_drv = new(bpss_wr_done);
 `endif
-`ifdef EN_STRM
+// `ifdef EN_STRM
     AXI4SR axis_host_src (aclk);
     AXI4SR axis_host_sink (aclk);
 
     c_env axis_host_drv = new(axis_host_sink, axis_host_src, STRM_HOST, params);
-`endif
+// `endif
 `ifdef EN_MEM
     AXI4SR axis_card_src (aclk);
     AXI4SR axis_card_sink (aclk);
@@ -155,10 +155,10 @@ module tb_user;
         .bpss_rd_done(bpss_rd_done),
         .bpss_wr_done(bpss_wr_done),
     `endif
-    `ifdef EN_STRM
+    // `ifdef EN_STRM
         .axis_host_sink(axis_host_sink),
         .axis_host_src(axis_host_src),
-    `endif
+    // `endif
     `ifdef EN_MEM
         .axis_card_sink(axis_card_sink),
         .axis_card_src(axis_card_src),
@@ -218,9 +218,9 @@ module tb_user;
     // Stream threads
     task env_threads();
         fork
-    `ifdef EN_STRM
+    // `ifdef EN_STRM
         axis_host_drv.run();
-    `endif
+    // `endif
     `ifdef EN_MEM
         axis_card_drv.run();
     `endif
@@ -241,9 +241,10 @@ module tb_user;
     
     // Stream completion
     task env_done();
-    `ifdef EN_STRM
-        wait(axis_host_drv.done.triggered);
-    `endif
+    // `ifdef EN_STRM
+        // wait(axis_host_drv.done.triggered);
+        wait(axis_host_src.tvalid == 1'b1);
+    // `endif
     `ifdef EN_MEM
         wait(axis_card_drv.done.triggered);
     `endif
@@ -346,7 +347,7 @@ module tb_user;
 
     // Dump
     initial begin
-        $dumpfile("dump.vcd"); $dumpvars;
+        $dumpfile("dump.vcd"); $dumpvars (0, sha256);
     end
 
 endmodule

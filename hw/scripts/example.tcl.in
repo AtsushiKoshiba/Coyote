@@ -87,6 +87,13 @@ switch $cfg(example) {
         add_files "$hw_dir/hdl/operators/examples/service_aes"  
     }
 
+    "sha256" {
+        puts "SHA256 example."
+
+        # Add source files
+        add_files "$hw_dir/hdl/operators/examples/sha256"  
+    }
+
     "service_reconfiguration" {
         puts "Coyote service (Partial reconfiguration). Daemon example."
 

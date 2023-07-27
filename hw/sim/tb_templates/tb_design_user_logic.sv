@@ -21,11 +21,11 @@ module design_user_logic_c0_0 (
     metaIntf.s                  bpss_wr_done,
 
 `endif
-`ifdef EN_STRM
+// `ifdef EN_STRM
     // AXI4S HOST STREAMS
     AXI4SR.s                    axis_host_sink,
     AXI4SR.m                    axis_host_src,
-`endif
+// `endif
 `ifdef EN_MEM
     // AXI4S CARD STREAMS
     AXI4SR.s                    axis_card_sink,
@@ -106,10 +106,10 @@ always_comb bpss_wr_req.tie_off_m();
 always_comb bpss_rd_done.tie_off_s();
 always_comb bpss_wr_done.tie_off_s();
 `endif
-`ifdef EN_STRM
+// `ifdef EN_STRM
 always_comb axis_host_sink.tie_off_s();
 always_comb axis_host_src.tie_off_m();
-`endif
+// `endif
 `ifdef EN_MEM
 always_comb axis_card_sink.tie_off_s();
 always_comb axis_card_src.tie_off_m();
@@ -164,6 +164,12 @@ always_comb axis_tcp_1_src.tie_off_m();
 `endif
 
 /* -- USER LOGIC -------------------------------------------------------- */
+sha256 sha256(
+    .aclk(aclk),
+    .aresetn(aresetn),
+    .axis_sink_int(axis_host_sink),
+    .axis_src_int(axis_host_src)
+);
 
 endmodule
 
