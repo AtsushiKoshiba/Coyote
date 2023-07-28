@@ -94,6 +94,13 @@ switch $cfg(example) {
         add_files "$hw_dir/hdl/operators/examples/sha256"  
     }
 
+    "gzip_compress" {
+        puts "GZIP compress example."
+
+        # Add source files
+        add_files "$hw_dir/hdl/operators/examples/gzip_compress"  
+    }
+
     "service_reconfiguration" {
         puts "Coyote service (Partial reconfiguration). Daemon example."
 
