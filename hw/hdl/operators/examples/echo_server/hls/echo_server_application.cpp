@@ -31,19 +31,19 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2015 Xilinx, 
 
 void client(hls::stream<ap_uint<16>> &sessioIdFifo,
 			hls::stream<ap_uint<16>> &lengthFifo,
-			hls::stream<net_axis<64>> &dataFifo,
-			hls::stream<appTxMeta> &txMetaData, hls::stream<net_axis<64>> &txData)
+			hls::stream<net_axis<DATA_WIDTH>> &dataFifo,
+			hls::stream<appTxMeta> &txMetaData, hls::stream<net_axis<DATA_WIDTH>> &txData)
 {
-#pragma HLS PIPELINE II = 1
+#pragma HLS PIPELINE II=1
 #pragma HLS INLINE off
 
 	// Reads new data from memory and writes it into fifo
 	// Read & write metadata only once per package
-	static ap_uint<1> esac_fsmState = 0;
+	static ap_uint<1> esac_fsmState=0;
 
 	ap_uint<16> sessionID;
 	ap_uint<16> length;
-	net_axis<64> currWord;
+	net_axis<DATA_WIDTH> currWord;
 
 	switch (esac_fsmState)
 	{
@@ -53,7 +53,7 @@ void client(hls::stream<ap_uint<16>> &sessioIdFifo,
 			sessioIdFifo.read(sessionID);
 			lengthFifo.read(length);
 			txMetaData.write(appTxMeta(sessionID, length));
-			esac_fsmState = 1;
+			esac_fsmState=1;
 		}
 		break;
 	case 1:
@@ -63,7 +63,7 @@ void client(hls::stream<ap_uint<16>> &sessioIdFifo,
 			txData.write(currWord);
 			if (currWord.last)
 			{
-				esac_fsmState = 0;
+				esac_fsmState=0;
 			}
 		}
 		break;
@@ -74,7 +74,7 @@ void dummy(hls::stream<ipTuple> &openConnection, hls::stream<openStatus> &openCo
 		   hls::stream<ap_uint<16>> &closeConnection,
 		   hls::stream<appTxRsp> &txStatus)
 {
-#pragma HLS PIPELINE II = 1
+#pragma HLS PIPELINE II=1
 #pragma HLS INLINE off
 
 	openStatus newConn;
@@ -84,8 +84,8 @@ void dummy(hls::stream<ipTuple> &openConnection, hls::stream<openStatus> &openCo
 	if (!openConStatus.empty())
 	{
 		openConStatus.read(newConn);
-		tuple.ip_address = 0x0a010101;
-		tuple.ip_port = 0x3412;
+		tuple.ip_address=0x0a010101;
+		tuple.ip_port=0x3412;
 		openConnection.write(tuple);
 		if (newConn.success)
 		{
@@ -103,19 +103,19 @@ void dummy(hls::stream<ipTuple> &openConnection, hls::stream<openStatus> &openCo
 void open_port(hls::stream<ap_uint<16>> &listenPort,
 			   hls::stream<bool> &listenSts)
 {
-#pragma HLS PIPELINE II = 1
+#pragma HLS PIPELINE II=1
 #pragma HLS INLINE off
 
-	static ap_uint<2> state = 0;
-#pragma HLS reset variable = state
+	static ap_uint<2> state=0;
+#pragma HLS reset variable=state
 
-	bool listenDone = false;
+	bool listenDone=false;
 
 	switch (state)
 	{
 	case 0:
 		listenPort.write(7);
-		state = 1;
+		state=1;
 		break;
 	case 1:
 		if (!listenSts.empty())
@@ -123,11 +123,11 @@ void open_port(hls::stream<ap_uint<16>> &listenPort,
 			listenSts.read(listenDone);
 			if (listenDone)
 			{
-				state = 2;
+				state=2;
 			}
 			else
 			{
-				state = 0;
+				state=0;
 			}
 		}
 		break;
@@ -141,7 +141,7 @@ void notification_handler(hls::stream<appNotification> &notific,
 						  hls::stream<appReadRequest> &readReq,
 						  hls::stream<ap_uint<16>> &lenghtFifo)
 {
-#pragma HLS PIPELINE II = 1
+#pragma HLS PIPELINE II=1
 #pragma HLS INLINE off
 
 	appNotification notification;
@@ -160,19 +160,19 @@ void notification_handler(hls::stream<appNotification> &notific,
 }
 
 void server(hls::stream<ap_uint<16>> &rxMetaData,
-			hls::stream<net_axis<64>> &rxData,
+			hls::stream<net_axis<DATA_WIDTH>> &rxData,
 			hls::stream<ap_uint<16>> &sessioIdFifo,
-			hls::stream<net_axis<64>> &dataFifo)
+			hls::stream<net_axis<DATA_WIDTH>> &dataFifo)
 {
-#pragma HLS PIPELINE II = 1
+#pragma HLS PIPELINE II=1
 #pragma HLS INLINE off
 
 	// Reads new data from memory and writes it into fifo
 	// Read & write metadata only once per package
-	static ap_uint<1> ksvs_fsmState = 0;
+	static ap_uint<1> ksvs_fsmState=0;
 
 	ap_uint<16> sessionID;
-	net_axis<64> currWord;
+	net_axis<DATA_WIDTH> currWord;
 
 	switch (ksvs_fsmState)
 	{
@@ -181,7 +181,7 @@ void server(hls::stream<ap_uint<16>> &rxMetaData,
 		{
 			rxMetaData.read(sessionID);
 			sessioIdFifo.write(sessionID);
-			ksvs_fsmState = 1;
+			ksvs_fsmState=1;
 		}
 		break;
 	case 1:
@@ -191,66 +191,72 @@ void server(hls::stream<ap_uint<16>> &rxMetaData,
 			dataFifo.write(currWord);
 			if (currWord.last)
 			{
-				ksvs_fsmState = 0;
+				ksvs_fsmState=0;
 			}
 		}
 		break;
 	}
 }
 
-void echo_server_application(hls::stream<ap_uint<16>> &listenPort,
-							 hls::stream<bool> &listenPortStatus,
-							 hls::stream<appNotification> &notifications,
-							 hls::stream<appReadRequest> &readRequest,
-							 hls::stream<ap_uint<16>> &rxMetaData,
-							 hls::stream<net_axis<64>> &rxData,
-							 hls::stream<ipTuple> &openConnection,
-							 hls::stream<openStatus> &openConStatus,
-							 hls::stream<ap_uint<16>> &closeConnection,
-							 hls::stream<appTxMeta> &txMetaData,
-							 hls::stream<net_axis<64>> &txData,
-							 hls::stream<appTxRsp> &txStatus)
+void echo_server_application(hls::stream<ap_uint<16>> &m_axis_listen_port,
+							 hls::stream<bool> &s_axis_listen_port_status,
+							 hls::stream<appNotification> &s_axis_notifications,
+							 hls::stream<appReadRequest> &m_axis_read_package,
+							 hls::stream<ap_uint<16>> &s_axis_rx_metadata,
+							 hls::stream<ap_axiu<DATA_WIDTH, 0, 0, 0>> &s_axis_rx_data,
+							 hls::stream<ipTuple> &m_axis_open_connection,
+							 hls::stream<openStatus> &s_axis_open_status,
+							 hls::stream<ap_uint<16>> &m_axis_close_connection,
+							 hls::stream<appTxMeta> &m_axis_tx_metadata,
+							 hls::stream<ap_axiu<DATA_WIDTH, 0, 0, 0>> &m_axis_tx_data,
+							 hls::stream<appTxRsp> &s_axis_tx_status)
 {
 #pragma HLS DATAFLOW disable_start_propagation
-#pragma HLS INTERFACE ap_ctrl_none port = return
+#pragma HLS INTERFACE ap_ctrl_none port=return
 
-#pragma HLS INTERFACE axis register port = listenPort name = m_axis_listen_port
-#pragma HLS INTERFACE axis register port = listenPortStatus name = s_axis_listen_port_status
+#pragma HLS INTERFACE axis register port=m_axis_listen_port
+#pragma HLS INTERFACE axis register port=s_axis_listen_port_status
 	// #pragma HLS INTERFACE axis register port=closePort name=m_axis_close_port
 
-#pragma HLS INTERFACE axis register port = notifications name = s_axis_notifications
-#pragma HLS INTERFACE axis register port = readRequest name = m_axis_read_package
-#pragma HLS DATA_PACK variable = notifications
-#pragma HLS DATA_PACK variable = readRequest
+#pragma HLS INTERFACE axis register port=s_axis_notifications
+#pragma HLS INTERFACE axis register port=m_axis_read_package
+#pragma HLS DATA_PACK variable=s_axis_notifications
+#pragma HLS DATA_PACK variable=m_axis_read_package
 
-#pragma HLS INTERFACE axis register port = rxMetaData name = s_axis_rx_metadata
-#pragma HLS INTERFACE axis register port = rxData name = s_axis_rx_data
+#pragma HLS INTERFACE axis register port=s_axis_rx_metadata
+#pragma HLS INTERFACE axis register port=s_axis_rx_data
 	// #pragma HLS DATA_PACK variable=rxMetaData
 
-#pragma HLS INTERFACE axis register port = openConnection name = m_axis_open_connection
-#pragma HLS INTERFACE axis register port = openConStatus name = s_axis_open_status
-#pragma HLS DATA_PACK variable = openConnection
-#pragma HLS DATA_PACK variable = openConStatus
+#pragma HLS INTERFACE axis register port=m_axis_open_connection
+#pragma HLS INTERFACE axis register port=s_axis_open_status
+#pragma HLS DATA_PACK variable=m_axis_open_connection
+#pragma HLS DATA_PACK variable=s_axis_open_status
 
-#pragma HLS INTERFACE axis register port = closeConnection name = m_axis_close_connection
+#pragma HLS INTERFACE axis register port=m_axis_close_connection
 
-#pragma HLS INTERFACE axis register port = txMetaData name = m_axis_tx_metadata
-#pragma HLS INTERFACE axis register port = txData name = m_axis_tx_data
-#pragma HLS INTERFACE axis register port = txStatus name = s_axis_tx_status
-#pragma HLS DATA_PACK variable = txMetaData
-#pragma HLS DATA_PACK variable = txStatus
+#pragma HLS INTERFACE axis register port=m_axis_tx_metadata
+#pragma HLS INTERFACE axis register port=m_axis_tx_data
+#pragma HLS INTERFACE axis register port=s_axis_tx_status
+#pragma HLS DATA_PACK variable=m_axis_tx_metadata
+#pragma HLS DATA_PACK variable=s_axis_tx_status
+
+	static hls::stream<net_axis<DATA_WIDTH>> s_axis_rx_data_internal;
+	static hls::stream<net_axis<DATA_WIDTH>> m_axis_tx_data_internal;
+
+	convert_axis_to_net_axis<DATA_WIDTH>(s_axis_rx_data, s_axis_rx_data_internal);
+	convert_net_axis_to_axis<DATA_WIDTH>(m_axis_tx_data_internal, m_axis_tx_data);
 
 	static hls::stream<ap_uint<16>> esa_sessionidFifo("esa_sessionidFifo");
 	static hls::stream<ap_uint<16>> esa_lengthFifo("esa_lengthFifo");
-	static hls::stream<net_axis<64>> esa_dataFifo("esa_dataFifo");
+	static hls::stream<net_axis<DATA_WIDTH>> esa_dataFifo("esa_dataFifo");
 
-#pragma HLS stream variable = esa_sessionidFifo depth = 64
-#pragma HLS stream variable = esa_lengthFifo depth = 64
-#pragma HLS stream variable = esa_dataFifo depth = 2048
+#pragma HLS stream variable=esa_sessionidFifo depth=64
+#pragma HLS stream variable=esa_lengthFifo depth=64
+#pragma HLS stream variable=esa_dataFifo depth=2048
 
-	client(esa_sessionidFifo, esa_lengthFifo, esa_dataFifo, txMetaData, txData);
-	server(rxMetaData, rxData, esa_sessionidFifo, esa_dataFifo);
-	open_port(listenPort, listenPortStatus);
-	notification_handler(notifications, readRequest, esa_lengthFifo);
-	dummy(openConnection, openConStatus, closeConnection, txStatus);
+	client(esa_sessionidFifo, esa_lengthFifo, esa_dataFifo, m_axis_tx_metadata, m_axis_tx_data_internal);
+	server(s_axis_rx_metadata, s_axis_rx_data_internal, esa_sessionidFifo, esa_dataFifo);
+	open_port(m_axis_listen_port, s_axis_listen_port_status);
+	notification_handler(s_axis_notifications, m_axis_read_package, esa_lengthFifo);
+	dummy(m_axis_open_connection, s_axis_open_status, m_axis_close_connection, s_axis_tx_status);
 }
