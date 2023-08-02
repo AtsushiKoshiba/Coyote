@@ -26,17 +26,43 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABI
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2015 Xilinx, Inc.
 ************************************************/
+#include "echo_server_application.hpp"
 
-#include "../axi_utils.hpp"
-#include "../toe/toe.hpp"
+int main()
+{
 
-/** @defgroup echo_server_application Echo Server Application
- *
- */
-void echo_server_application(hls::stream<ap_uint<16> >& listenPort, hls::stream<bool>& listenPortStatus,
-								hls::stream<appNotification>& notifications, hls::stream<appReadRequest>& readRequest,
-								hls::stream<ap_uint<16> >& rxMetaData, hls::stream<net_axis<64> >& rxData,
-								hls::stream<ipTuple>& openConnection, hls::stream<openStatus>& openConStatus,
-								hls::stream<ap_uint<16> >& closeConnection,
-								hls::stream<appTxMeta>& txMetaData, hls::stream<net_axis<64> >& txData,
-								hls::stream<appTxRsp>& txStatus);
+	hls::stream<ap_uint<16> > listenPort("listenPort");
+	hls::stream<bool> listenPortStatus("listenPortStatus");
+	hls::stream<appNotification> notifications;
+	hls::stream<appReadRequest> readRequest;
+	hls::stream<ap_uint<16> > rxMetaData;
+	hls::stream<net_axis<64> > rxData;
+	hls::stream<ipTuple> openConnection;
+	hls::stream<openStatus> openConStatus;
+	hls::stream<ap_uint<16> > closeConnection;
+	hls::stream<appTxMeta> txMetaData;
+	hls::stream<net_axis<64> > txData;
+	hls::stream<appTxRsp>	txStatus;
+
+	int count = 0;
+	int portOpened = -1;
+	while (count < 50)
+	{
+		echo_server_application(	listenPort, listenPortStatus,
+									notifications, readRequest,
+									rxMetaData, rxData,
+									openConnection, openConStatus,
+									closeConnection,
+									txMetaData, txData,
+									txStatus);
+		if (!listenPort.empty())
+		{
+			ap_uint<16> port = listenPort.read();
+			std::cout << std::dec << "opening port: " << port << std::endl;
+			listenPortStatus.write(true);
+			portOpened = 0;
+		}
+		count++;
+	}
+	return portOpened;
+}
