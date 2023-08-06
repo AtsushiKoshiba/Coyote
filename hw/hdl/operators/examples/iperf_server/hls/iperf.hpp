@@ -29,17 +29,20 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef IPERF_HPP
 #define IPERF_HPP
 
-#include "../toe/toe.hpp"
+#include "./toe.hpp"
+
+#define DATA_WIDTH 512
 
 using namespace hls;
 
-
-void iperf(	stream<ap_uint<16> >& listenPort, stream<bool>& listenPortStatus,
-			stream<appNotification>& notifications, stream<appReadRequest>& readRequest,
-			stream<ap_uint<16> >& rxMetaData, stream<axiWord>& rxData,
-			stream<ipTuple>& openConnection, stream<openStatus>& openConStatus,
-			stream<ap_uint<16> >& closeConnection,
-			stream<ap_uint<16> >& txMetaData, stream<axiWord>& txData,
-			stream<ap_int<17> >& txStatus);
+void iperf(hls::stream<ap_uint<16>> &m_axis_listen_port, hls::stream<bool> &s_axis_listen_port_status,
+		   // This is disabled for the time being, because it adds complexity/potential issues
+		   // stream<ap_uint<16> >& closePort,
+		   hls::stream<appNotification> &s_axis_notifications, hls::stream<appReadRequest> &m_axis_read_package,
+		   hls::stream<ap_uint<16>> &s_axis_rx_metadata, hls::stream<ap_axiu<DATA_WIDTH, 0, 0, 0>> &s_axis_rx_data,
+		   hls::stream<ipTuple> &m_axis_open_connection, hls::stream<openStatus> &s_axis_open_status,
+		   hls::stream<ap_uint<16>> &m_axis_close_connection,
+		   hls::stream<ap_uint<16>> &m_axis_tx_metadata, hls::stream<ap_axiu<DATA_WIDTH, 0, 0, 0>> &m_axis_tx_data,
+		   hls::stream<ap_int<17>> &s_axis_tx_status);
 
 #endif
