@@ -137,6 +137,22 @@ switch $cfg(example) {
  
     }
 
+    "tcp_data_filter" {
+        puts "Data filter on TCP data."
+        
+        # Add source files
+        add_files "$hw_dir/hdl/operators/examples/tcp_data_filter/echo_server_role.sv"
+        add_files "$hw_dir/hdl/operators/examples/tcp_data_filter/tcp_data_filter_c0_0.svh"
+        update_compile_order -fileset sources_1
+        create_ip -name echo_server_application -vendor ethz.systems.fpga -library hls -version 1.0 -module_name echo_server_application_ip
+        update_compile_order -fileset sources_1
+        create_ip -name ila -vendor xilinx.com -library ip -version 6.2 -module_name ila_controller
+        set_property -dict [list CONFIG.C_PROBE8_WIDTH {16} CONFIG.C_PROBE7_WIDTH {16} CONFIG.C_PROBE6_WIDTH {64} CONFIG.C_PROBE5_WIDTH {32} CONFIG.C_PROBE4_WIDTH {32} CONFIG.C_PROBE3_WIDTH {16} CONFIG.C_PROBE2_WIDTH {16} CONFIG.C_NUM_OF_PROBES {11} CONFIG.Component_Name {ila_controller} CONFIG.C_INPUT_PIPE_STAGES {1}] [get_ips ila_controller]
+        update_compile_order -fileset sources_1
+        create_ip -name ila -vendor xilinx.com -library ip -version 6.2 -module_name ila_perf
+        set_property -dict [list CONFIG.C_PROBE42_WIDTH {32} CONFIG.C_PROBE41_WIDTH {32} CONFIG.C_PROBE40_WIDTH {32} CONFIG.C_PROBE39_WIDTH {32} CONFIG.C_PROBE30_WIDTH {32} CONFIG.C_PROBE29_WIDTH {16} CONFIG.C_PROBE28_WIDTH {32} CONFIG.C_PROBE27_WIDTH {16} CONFIG.C_PROBE26_WIDTH {64} CONFIG.C_PROBE25_WIDTH {30} CONFIG.C_PROBE21_WIDTH {16} CONFIG.C_PROBE20_WIDTH {32} CONFIG.C_PROBE19_WIDTH {16} CONFIG.C_PROBE18_WIDTH {64} CONFIG.C_PROBE17_WIDTH {64} CONFIG.C_PROBE16_WIDTH {32} CONFIG.C_PROBE15_WIDTH {2} CONFIG.C_NUM_OF_PROBES {43} CONFIG.Component_Name {ila_perf} CONFIG.C_INPUT_PIPE_STAGES {1} CONFIG.ALL_PROBE_SAME_MU_CNT {5}] [get_ips ila_perf]
+    }
+
     "service_reconfiguration" {
         puts "Coyote service (Partial reconfiguration). Daemon example."
 
