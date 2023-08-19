@@ -1700,6 +1700,7 @@ module design_dynamic_wrapper #(
         .axis_tcp_1_src_tready    (axis_tcp_1_out_ul[{{ i }}].tready),
         .axis_tcp_1_src_tvalid    (axis_tcp_1_out_ul[{{ i }}].tvalid),
 {% endif %}
+        .io_ctrl(8'b00000001),
 {% if cnfg.en_uclk %}
         .aclk                   (uclk),
         .aresetn                (uresetn),

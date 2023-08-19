@@ -4,6 +4,7 @@ import lynxTypes::*;
 
 `include "axi_macros.svh"
 `include "lynx_macros.svh"
+`include "axi_intf.sv"
 
 /**
  * User logic
@@ -108,6 +109,9 @@ module design_user_logic_c{{ c_cnfg }}_{{ c_reg }} (
     AXI4SR.m                    axis_tcp_1_src,
 
 {% endif %}
+    // IO control
+    input logic [7:0]            io_ctrl,
+
     // Clock and reset
     input  wire                 aclk,
     input  wire[0:0]            aresetn
@@ -183,6 +187,37 @@ module design_user_logic_c{{ c_cnfg }}_{{ c_reg }} (
 //always_comb axis_tcp_1_sink.tie_off_s();
 //always_comb axis_tcp_1_src.tie_off_m();
 {% endif %}
+
+// Requires that cnfg.n_card_axi is equal to cnfg.n_strm_axi
+// Currently tested only with n_card_axi = n_strm_axi = 1
+{% for i in range(0, cnfg.n_card_axi) %}
+    AXI4SR axis_switch_mem_{{i}}_src();
+    AXI4SR axis_switch_mem_{{i}}_sink();
+{% endfor %}
+
+always_comb begin
+    case(io_ctrl)
+        8'h01: begin
+        {% for i in range(0, cnfg.n_card_axi) %}
+            // switch_mem drives host i.e. slave drives master
+            `AXISR_ASSIGN_CTS(axis_switch_mem_{{i}}_src, axis_host_{{i}}_src);
+
+            // host drives switch_mem i.e. slave drives master
+            `AXISR_ASSIGN_CTS(axis_host_{{i}}_sink, axis_switch_mem_{{i}}_sink);
+        {% endfor %}
+        end
+        8'h02: begin
+        {% for i in range(0, cnfg.n_card_axi) %}
+            // switch_mem drives card i.e. slave drives master
+            `AXISR_ASSIGN_CTS(axis_switch_mem_{{i}}_src, axis_card_{{i}}_src);
+
+            // Card drives switch_mem i.e. slave drives master
+            `AXISR_ASSIGN_CTS(axis_card_{{i}}_sink, axis_switch_mem_{{i}}_sink);
+        {% endfor %}
+        end
+        default: ;
+    endcase
+end
 
 /* -- USER LOGIC -------------------------------------------------------- */
 
