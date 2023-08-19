@@ -19,7 +19,7 @@
       usbutils
       pciutils
       pahole
-      gcc11
+      gcc
 
       python3
       python-with-my-packages
