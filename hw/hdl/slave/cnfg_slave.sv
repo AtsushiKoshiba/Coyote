@@ -100,7 +100,10 @@ module cnfg_slave #(
   output logic                restart_rd,
   output logic                restart_wr,
   output logic                decouple,
-  output logic                pf_irq
+  output logic                pf_irq,
+
+  // IO Control
+  output logic [7:0]          io_ctrl
 );  
 
 // -- Decl -------------------------------------------------------------------------------
@@ -302,6 +305,9 @@ localparam integer RDMA_1_POST_REG_7                      = 56;
 localparam integer RDMA_1_STAT_CMD_USED_REG               = 57;
 localparam integer RDMA_1_STAT_POSTED_REG                 = 58;
 localparam integer RDMA_1_CMPLT_REG                       = 59;
+
+// 127 (RW) : IO Switch
+localparam integer IO_SWITCH_REG                          = 127;
 
 // 64 (RO) : Status DMA completion
 localparam integer STAT_DMA_REG                           = 2**PID_BITS;
@@ -542,6 +548,12 @@ always_ff @(posedge aclk) begin
             end
           end
 `endif
+        IO_SWITCH_REG: // IO switch configure
+          for (int i = 0; i < AVX_DATA_BITS/8; i++) begin
+              if(s_axim_ctrl.wstrb[i]) begin
+                  slv_reg[IO_SWITCH_REG][(i*8)+:8] <= s_axim_ctrl.wdata[(i*8)+:8];
+              end
+          end
 
         default : ;
       endcase
@@ -684,6 +696,8 @@ always_ff @(posedge aclk) begin
           axi_rdata[RDMA_CMPLT_SSN_OFFS+:RDMA_MSN_BITS] <= cmplt_que_rdma_1_out.ssn;
         end
 `endif
+        [IO_SWITCH_REG:IO_SWITCH_REG]:
+          axi_rdata <= slv_reg[IO_SWITCH_REG];
 
         [STAT_DMA_REG:STAT_DMA_REG+(2**PID_BITS)-1]: begin
           axi_mux <= 1;
@@ -929,6 +943,9 @@ assign s_pfault_wr.ready = 1'b1;
 assign restart_rd = slv_reg[CTRL_REG][CTRL_CLR_IRQ_PENDING];
 assign restart_wr = slv_reg[CTRL_REG][CTRL_CLR_IRQ_PENDING];
 assign pf_irq = irq_pending;
+
+// IO control
+assign io_ctrl = slv_reg[IO_SWITCH_REG][7:0];
 
 // Decoupling
 assign decouple = slv_reg[CTRL_DP_REG_SET][CTRL_DP_DECOUPLE];

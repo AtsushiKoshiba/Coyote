@@ -209,6 +209,13 @@ public:
 	void netDrop(bool clr, bool dir, uint32_t packet_id);
 
 	/**
+	 * @brief IO control switch 
+	 */
+	void ioSwitch(IODevs io_dev);
+
+	void ioSwDbg();
+
+	/**
 	 * @brief Debug
 	 * 
 	 */

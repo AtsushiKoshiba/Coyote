@@ -18,7 +18,7 @@ namespace fpga {
 // ======-------------------------------------------------------------------------------
 //#define VERBOSE_DEBUG_1 // Handle
 #define VERBOSE_DEBUG_2 // Reconfig
-//#define VERBOSE_DEBUG_3 // Perf
+#define VERBOSE_DEBUG_3 // Perf
 
 #ifdef VERBOSE_DEBUG_3
 #define VERBOSE_DEBUG_2
@@ -147,6 +147,12 @@ enum class CoyoteAlloc {
     RCNFG_2M = 3
 };
 
+/* IO devices */
+enum class IODevs : uint8_t {
+    HOST_MEM = 0x01,
+    FPGA_DRAM = 0x02
+};
+
 /* AVX regs */
 enum class CnfgAvxRegs : uint32_t {
     CTRL_REG = 0,
@@ -160,6 +166,7 @@ enum class CnfgAvxRegs : uint32_t {
     RDMA_POST_REG_1 = 18,
     RDMA_STAT_REG = 19,
     RDMA_CMPLT_REG = 20,
+    IO_SWITCH_REG = 32,
     STAT_DMA_REG = 64
 };
 
@@ -200,6 +207,7 @@ enum class CnfgLegRegs : uint32_t {
     RDMA_STAT_POSTED_REG = 42,
     RDMA_CMPLT_REG = 43,
     STAT_DMA_REG = 64,
+    IO_SWITCH_REG = 127,
     STAT_RDMA_REG = 128,
 };
 

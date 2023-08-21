@@ -127,7 +127,10 @@ module tlb_region_top #(
 	output logic 		                decouple,
 	
 	// Page fault IRQ
-	output logic                    	pf_irq
+	output logic                    	pf_irq,
+
+    // IO control switch
+    output logic [7:0]                  io_ctrl
 );
 
 // -- Decl -----------------------------------------------------------------------------------
@@ -430,7 +433,8 @@ axis_interconnect_tlb inst_mux_ltlb (
         .restart_rd(rd_restart),
         .restart_wr(wr_restart),
 		.decouple(decouple),
-		.pf_irq(pf_irq)
+		.pf_irq(pf_irq),
+        .io_ctrl(io_ctrl)
 	);
 
 // ----------------------------------------------------------------------------------------

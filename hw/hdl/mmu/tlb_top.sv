@@ -133,7 +133,10 @@ module tlb_top #(
 	output logic [N_REGIONS-1:0]		decouple,
 	
 	// Page fault IRQ
-	output logic [N_REGIONS-1:0]    	pf_irq
+	output logic [N_REGIONS-1:0]    	pf_irq,
+
+    // IO Control switches
+    output logic [N_REGIONS-1:0][7:0]   io_ctrl_switch
 );
 
 // Internal
@@ -225,7 +228,8 @@ for(genvar i = 0; i < N_REGIONS; i++) begin
         .m_wback(wback_arb[i]),
     `endif
         .decouple(decouple[i]),
-        .pf_irq(pf_irq[i])
+        .pf_irq(pf_irq[i]),
+        .io_ctrl(io_ctrl_switch[i])
     );
 
 end

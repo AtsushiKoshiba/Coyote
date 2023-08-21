@@ -868,6 +868,28 @@ void cProcess::netDrop(bool clr, bool dir, uint32_t packet_id) {
 			throw std::runtime_error("ioctl_net_drop() failed");
 }
 
+/**
+ * @brief IO control switch
+ * 
+ * @param io_dev - target IO device
+ */
+void cProcess::ioSwitch(IODevs io_dev) {
+	#ifdef EN_AVX
+	if(fcnfg.en_avx){
+		cnfg_reg_avx[static_cast<uint32_t>(CnfgAvxRegs::IO_SWITCH_REG)] = _mm256_set_epi64x(0, 0, 0, static_cast<uint8_t>(io_dev));
+	}
+	else
+#endif
+		cnfg_reg[static_cast<uint32_t>(CnfgLegRegs::IO_SWITCH_REG)] = static_cast<uint8_t>(io_dev);
+};
+
+void cProcess::ioSwDbg() {
+	std::cout << "IO switch register: " << _mm256_extract_epi64(cnfg_reg_avx[static_cast<uint32_t>(CnfgAvxRegs::IO_SWITCH_REG)], 0x3) 
+		<< _mm256_extract_epi64(cnfg_reg_avx[static_cast<uint32_t>(CnfgAvxRegs::IO_SWITCH_REG)], 0x2)
+		<< _mm256_extract_epi64(cnfg_reg_avx[static_cast<uint32_t>(CnfgAvxRegs::IO_SWITCH_REG)], 0x1)
+		<< _mm256_extract_epi64(cnfg_reg_avx[static_cast<uint32_t>(CnfgAvxRegs::IO_SWITCH_REG)], 0x0) << std::endl;
+}
+
 // ======-------------------------------------------------------------------------------
 // DEBUG
 // ======-------------------------------------------------------------------------------
