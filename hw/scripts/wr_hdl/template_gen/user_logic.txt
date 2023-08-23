@@ -197,6 +197,7 @@ module design_user_logic_c{{ c_cnfg }}_{{ c_reg }} (
 
 always_comb begin
     case(io_ctrl)
+        {% if cnfg.en_strm %}
         8'h01: begin
         {% for i in range(0, cnfg.n_card_axi) %}
             // switch_mem drives host i.e. slave drives master
@@ -206,6 +207,8 @@ always_comb begin
             `AXISR_ASSIGN_CTS(axis_host_{{i}}_sink, axis_switch_mem_{{i}}_sink);
         {% endfor %}
         end
+        {% endif %}
+        {% if cnfg.en_mem %}
         8'h02: begin
         {% for i in range(0, cnfg.n_card_axi) %}
             // switch_mem drives card i.e. slave drives master
@@ -215,6 +218,7 @@ always_comb begin
             `AXISR_ASSIGN_CTS(axis_card_{{i}}_sink, axis_switch_mem_{{i}}_sink);
         {% endfor %}
         end
+        {% endif %}
         {% if cnfg.en_rdma_0 %}
         8'b00000101: begin
             // RDMA_0 send from host
