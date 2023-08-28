@@ -215,6 +215,8 @@ public:
 
 	void ioSwDbg();
 
+	IODevs userInIOSwtch(uint8_t user_req);
+
 	/**
 	 * @brief Debug
 	 * 

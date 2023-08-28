@@ -890,6 +890,49 @@ void cProcess::ioSwDbg() {
 		<< _mm256_extract_epi64(cnfg_reg_avx[static_cast<uint32_t>(CnfgAvxRegs::IO_SWITCH_REG)], 0x0) << std::endl;
 }
 
+IODevs cProcess::userInIOSwtch(uint8_t user_req)
+{
+	IODevs io_dev;
+	switch (user_req)
+	{
+	case 0b00000001:
+		io_dev = IODevs::HOST_MEM;
+		break;
+	case 0b00000010:
+		io_dev = IODevs::FPGA_DRAM;
+		break;
+	case 0b00000101:
+		io_dev = IODevs::RDMA_0_HOST_SEND;
+		break;
+	case 0b00001001:
+		io_dev = IODevs::RDMA_0_HOST_RECEIVE;
+		break;
+	case 0b00000110:
+		io_dev = IODevs::RDMA_0_CARD_SEND;
+		break;
+	case 0b00001010:
+		io_dev = IODevs::RDMA_0_CARD_RECEIVE;
+		break;
+	case 0b00010001:
+		io_dev = IODevs::RDMA_1_HOST_SEND;
+		break;
+	case 0b00100001:
+		io_dev = IODevs::RDMA_1_HOST_RECEIVE;
+		break;
+	case 0b00010010:
+		io_dev = IODevs::RDMA_1_CARD_SEND;
+		break;
+	case 0b00100010:
+		io_dev = IODevs::RDMA_1_CARD_RECEIVE;
+		break;
+	default:
+		io_dev = IODevs::ERROR_DEV;
+		break;
+	}
+
+	return io_dev;
+}
+
 // ======-------------------------------------------------------------------------------
 // DEBUG
 // ======-------------------------------------------------------------------------------
