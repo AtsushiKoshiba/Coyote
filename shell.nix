@@ -20,6 +20,8 @@
       pciutils
       pahole
       gcc
+      zlib.dev
+      openssl.dev
 
       python3
       python-with-my-packages
