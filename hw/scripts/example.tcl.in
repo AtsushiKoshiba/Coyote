@@ -101,6 +101,13 @@ switch $cfg(example) {
         add_files "$hw_dir/hdl/operators/examples/io_switch_ndp"  
     }
 
+    "host_baseline" {
+        puts "IO switch example."
+
+        # Add source files
+        add_files "$hw_dir/hdl/operators/examples/host_baseline"  
+    }
+
     "gzip_compress" {
         puts "GZIP compress example."
 
