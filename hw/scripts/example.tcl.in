@@ -94,6 +94,13 @@ switch $cfg(example) {
         add_files "$hw_dir/hdl/operators/examples/sha256"  
     }
 
+    "md5" {
+        puts "MD5 example."
+
+        # Add source files
+        add_files "$hw_dir/hdl/operators/examples/md5"  
+    }
+
     "io_switch_ndp" {
         puts "IO switch example."
 
