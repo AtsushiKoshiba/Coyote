@@ -15,6 +15,7 @@
 #include <gzip/utils.hpp>
 #include <openssl/evp.h>
 #include <openssl/aes.h>
+#include <openssl/md5.h>
 
 using namespace fpga;
 
@@ -36,6 +37,30 @@ constexpr auto const cipherLow = 0xa89ecaf32466ef97;
 constexpr auto const cipherHigh = 0x3ad77bb40d7a3660;
 
 const unsigned char aes_key[16] = {0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c, 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6};
+
+unsigned char digest[MD5_DIGEST_LENGTH];
+
+unsigned char *md5(const unsigned char *data, size_t length)
+{
+    // Check if the data is NULL or has zero length.
+    if (data == nullptr || length == 0)
+    {
+        return nullptr;
+    }
+
+    // Create an MD5 context.
+    MD5_CTX ctx;
+    MD5_Init(&ctx);
+
+    // Update the context with the data.
+    MD5_Update(&ctx, data, length);
+
+    // Get the MD5 digest.
+    MD5_Final(digest, &ctx);
+
+    // Return the MD5 digest.
+    return digest;
+}
 
 void gzipCompress(char *fMem, size_t size)
 {
@@ -135,6 +160,7 @@ int main(int argc, char *argv[])
      * 0: AES-ECB Encrypt
      * 1: SHA256
      * 2: GZIP compress
+     * 3: MD5
      */
     uint32_t bench_op;
     if (commandLineArgs.count("benchmark") > 0)
@@ -203,9 +229,14 @@ int main(int argc, char *argv[])
         std::cout << "SHA256" << std::endl;
         calculate_sha256((const unsigned char *)fMem, size);
     }
-    else
+    else if (bench_op == 2)
     {
         // GZIP compression
         gzipCompress((char *)fMem, size);
+    }
+    else if (bench_op == 3)
+    {
+        // GZIP compression
+        md5((const unsigned char *)fMem, size);
     }
 }
