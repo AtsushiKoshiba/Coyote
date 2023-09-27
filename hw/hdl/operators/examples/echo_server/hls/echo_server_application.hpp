@@ -35,23 +35,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.// Copyright (c) 2015 Xilinx, 
 /** @defgroup echo_server_application Echo Server Application
  *
  */
-// void echo_server_application(hls::stream<ap_uint<16>> &listenPort, hls::stream<bool> &listenPortStatus,
-// 							 hls::stream<appNotification> &notifications, hls::stream<appReadRequest> &readRequest,
-// 							 hls::stream<ap_uint<16>> &rxMetaData, hls::stream<net_axis<DATA_WIDTH>> &rxData,
-// 							 hls::stream<ipTuple> &openConnection, hls::stream<openStatus> &openConStatus,
-// 							 hls::stream<ap_uint<16>> &closeConnection,
-// 							 hls::stream<appTxMeta> &txMetaData, hls::stream<net_axis<DATA_WIDTH>> &txData,
-// 							 hls::stream<appTxRsp> &txStatus);
-
-void echo_server_application(hls::stream<ap_uint<16>> &m_axis_listen_port,
-							 hls::stream<bool> &s_axis_listen_port_status,
-							 hls::stream<appNotification> &s_axis_notifications,
-							 hls::stream<appReadRequest> &m_axis_read_package,
-							 hls::stream<ap_uint<16>> &s_axis_rx_metadata,
-							 hls::stream<ap_axiu<DATA_WIDTH, 0, 0, 0>> &s_axis_rx_data,
-							 hls::stream<ipTuple> &m_axis_open_connection,
-							 hls::stream<openStatus> &s_axis_open_status,
-							 hls::stream<ap_uint<16>> &m_axis_close_connection,
-							 hls::stream<appTxMeta> &m_axis_tx_metadata,
-							 hls::stream<ap_axiu<DATA_WIDTH, 0, 0, 0>> &m_axis_tx_data,
-							 hls::stream<appTxRsp> &s_axis_tx_status);
+void echo_server_application(hls::stream<ap_uint<16>> &listenPort, hls::stream<bool> &listenPortStatus,
+							 hls::stream<appNotification> &notifications, hls::stream<appReadRequest> &readRequest,
+							 hls::stream<ap_uint<16>> &rxMetaData, hls::stream<net_axis<DATA_WIDTH>> &rxData,
+							 hls::stream<appTxMeta> &txMetaData, hls::stream<net_axis<DATA_WIDTH>> &txData,
+							 hls::stream<appTxRsp> &txStatus);
