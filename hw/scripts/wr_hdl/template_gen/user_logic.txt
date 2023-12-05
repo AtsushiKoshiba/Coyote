@@ -279,6 +279,50 @@ always_comb begin
             `AXISR_ASSIGN_CTS(axis_rdma_1_sink, axis_switch_mem_0_sink);
         end
         {% endif %}
+        {% if cnfg.en_tcp_0 %}
+        8'b01000101: begin
+            // TCP_0 send from host (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_tcp_0_src);
+            `AXISR_ASSIGN_CTS(axis_host_0_sink, axis_switch_mem_0_sink);
+        end
+        8'b01001001: begin
+            // TCP_0 receive to host (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_host_0_src);
+            `AXISR_ASSIGN_CTS(axis_tcp_0_sink, axis_switch_mem_0_sink);
+        end
+        8'b01000110: begin
+            // TCP_0 send from card (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_tcp_0_src);
+            `AXISR_ASSIGN_CTS(axis_card_0_sink, axis_switch_mem_0_sink);
+        end
+        8'b01001010: begin
+            // TCP_0 receive to card (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_card_0_src);
+            `AXISR_ASSIGN_CTS(axis_tcp_0_sink, axis_switch_mem_0_sink);
+        end
+        {% endif %}
+        {% if cnfg.en_tcp_1 %}
+        8'b01010001: begin
+            // TCP_1 send from host (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_tcp_1_src);
+            `AXISR_ASSIGN_CTS(axis_host_0_sink, axis_switch_mem_0_sink);
+        end
+        8'b01100001: begin
+            // TCP_1 receive to host (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_host_0_src);
+            `AXISR_ASSIGN_CTS(axis_tcp_1_sink, axis_switch_mem_0_sink);
+        end
+        8'b01010010: begin
+            // TCP_1 send from card (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_tcp_1_src);
+            `AXISR_ASSIGN_CTS(axis_card_0_sink, axis_switch_mem_0_sink);
+        end
+        8'b01100010: begin
+            // TCP_1 receive to card (dummy)
+            `AXISR_ASSIGN_CTS(axis_switch_mem_0_src, axis_card_0_src);
+            `AXISR_ASSIGN_CTS(axis_tcp_1_sink, axis_switch_mem_0_sink);
+        end
+        {% endif %}
         default: ;
     endcase
 end
